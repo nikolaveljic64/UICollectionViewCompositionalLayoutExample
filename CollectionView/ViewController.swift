@@ -9,8 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var array = [[CellController]]()
-    
+    var data = [Section]()
     
     @IBOutlet weak var collectionView: UICollectionView! {
         didSet {
@@ -29,19 +28,58 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         
-        array.append([MyCell(),MyCell()])
-        array.append([MyCell2(),MyCell2(),MyCell2()])
-        array.append([])
+        data.append(Section(cells: [MyCell(), MyCell(), MyCell()], layoutSection: getLayoutSectionOne()))
+        
+        data.append(Section(cells: [MyCell2(), MyCell2(), MyCell2()], layoutSection: getLayoutSectionTwo()))
+        
+        data.append(Section(cells: [MyCell(), MyCell(), MyCell()], layoutSection: getLayoutSectionOne()))
+        
         
         collectionView.reloadData()
         
     }
     
+    func getLayoutSectionOne() -> NSCollectionLayoutSection {
+        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
+        item.contentInsets.trailing = 16
+        item.contentInsets.bottom = 16
+        item.contentInsets.top = 16
+        
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(300)), subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        
+        section.orthogonalScrollingBehavior = .paging
+        
+        return section
+    }
+    
+    func getLayoutSectionTwo() -> NSCollectionLayoutSection {
+        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(0.25), heightDimension: .fractionalHeight(0.5)))
+        item.contentInsets.trailing = 16
+        item.contentInsets.top = 16
+        
+        
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(500)), subitems: [item])
+        group.contentInsets.leading = 16
+        group.contentInsets.bottom = 8
+        
+        
+        let section = NSCollectionLayoutSection(group: group)
+        
+        section.boundarySupplementaryItems = [
+            .init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(50)), elementKind: "Categories", alignment: .topLeading)
+        ]
+        
+        return section
+    }
+    
+    
     private func createCollectionViewLayout() -> UICollectionViewLayout {
-      
+        
         let layout = UICollectionViewCompositionalLayout{ (sectionNumber, env) -> NSCollectionLayoutSection?  in
-            let data = self.array[sectionNumber].section()
-            return data
+            let layoutSection = self.data[sectionNumber].layoutSection
+            return layoutSection
         }
         
         return layout
@@ -58,18 +96,21 @@ class ViewController: UIViewController {
 }
 extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        array[section].count
+        data[section].cells.count
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        array.count
+        data.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let controller = array[indexPath.section][indexPath.row]
+        let controller = data[indexPath.section].cells[indexPath.row]
         return controller.collectionView(collectionView, cellForItemAt: indexPath)
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        data[indexPath.section].cells[indexPath.row].collectionView(collectionView, didSelectItemAt: indexPath)
+    }
     
 }
 

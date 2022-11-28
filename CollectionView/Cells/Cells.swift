@@ -9,76 +9,32 @@ import Foundation
 import UIKit
 
 
-protocol CellController {
-    func  collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
-    func  layoutFor() -> NSCollectionLayoutSection
+struct Section {
+    let cells: [CellController]
+    let layoutSection: NSCollectionLayoutSection
 }
 
+protocol CellController {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
+}
+
+extension CellController {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) { }
+}
 
 
 class MyCell: CellController {
-    func layoutFor() -> NSCollectionLayoutSection {
-        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)))
-        item.contentInsets.trailing = 16
-        item.contentInsets.bottom = 16
-        
-        
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(300)), subitems: [item])
-        
-        let section = NSCollectionLayoutSection(group: group)
-        
-        section.orthogonalScrollingBehavior = .paging
-        
-        return section
-    }
-    
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! MyCollectionViewCell
         cell.titleLabel.isHidden = true
-        cell.backgroundColor = .secondarySystemGroupedBackground
+        cell.backgroundColor = .secondarySystemFill
         return cell
     }
-    
 }
-
-extension [MyCell] {
-    
-}
-
-
-extension [CellController] {
-    func section() -> NSCollectionLayoutSection? {
-        return self.first?.layoutFor()
-    }
-}
-
-
-///
-///
-///
 
 class MyCell2: CellController {
-    func layoutFor() -> NSCollectionLayoutSection {
-        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(0.25), heightDimension: .fractionalHeight(0.5)))
-        item.contentInsets.trailing = 16
-        item.contentInsets.top = 16
-        
-        
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(500)), subitems: [item])
-        group.contentInsets.leading = 16
-        group.contentInsets.bottom = 8
-        
-        
-        let section = NSCollectionLayoutSection(group: group)
-        
-        section.boundarySupplementaryItems = [
-            .init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(50)), elementKind: "Categories", alignment: .topLeading)
-        ]
-        
-        return section
-    }
-    
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! MyCollectionViewCell
@@ -103,7 +59,6 @@ class MyCell2: CellController {
 //        section.interGroupSpacing = 10
 //
 //        return  UICollectionViewCompositionalLayout(section: section)
-
 //
 //        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5),
 //                                              heightDimension: .fractionalHeight(1))
@@ -121,7 +76,6 @@ class MyCell2: CellController {
 //
 //        let layout = UICollectionViewCompositionalLayout(section: section)
 //        return layout
-
 // Large item on top
 //        let inset: CGFloat = 8
 //
@@ -144,7 +98,6 @@ class MyCell2: CellController {
 //         let nestedGroup = NSCollectionLayoutGroup.vertical(layoutSize: fullGroupSize, subitems: [topItem, bottomGroup])
 //
 //         let section = NSCollectionLayoutSection(group: nestedGroup)
-
 //        UICollectionViewCompositionalLayout(sectionProvider: <#T##UICollectionViewCompositionalLayoutSectionProvider##UICollectionViewCompositionalLayoutSectionProvider##(Int, NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection?#>)
 //
 //        UICollectionViewCompositionalLayout
